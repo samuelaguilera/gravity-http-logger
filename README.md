@@ -39,5 +39,6 @@ The following add-ons are not using the WordPress HTTP API.
 * Authorize.net.
 * Emma.
 * Highrise.
+* Stripe.
 * Trello.
 * Twilio.
