@@ -1,6 +1,6 @@
 # Description
 
-This is an add-on for Gravity Forms that logs the code, message, headers and body of HTTP responses provided by WordPress for requests sent to third-party services using the WordPress HTTP API.
+This is an add-on for Gravity Forms that logs the code, message, headers and body of HTTP responses provided by WordPress for requests sent to third-party services using the WordPress HTTP API and GF core Backgroud tasks.
 
 # Usage
 
