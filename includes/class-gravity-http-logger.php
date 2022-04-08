@@ -161,6 +161,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 			'api.addpipe.com', // Pipe.
 			'www.google.com/recaptcha/api', // reCAPTCHA.
 			'hooks.zapier.com', // Zapier.
+			'gf_check_background_tasks', // Background Tasks.
 		);
 
 		// Allow filtering the services supported.
