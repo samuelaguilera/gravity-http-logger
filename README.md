@@ -29,6 +29,7 @@ This is an add-on for Gravity Forms that logs the code, message, headers and bod
 * SendGrid.
 * Slack.
 * Square.
+* Webhooks. (Logs the background request sent to admin-ajax.php)
 * Zoho CRM.
 * Zapier.
 

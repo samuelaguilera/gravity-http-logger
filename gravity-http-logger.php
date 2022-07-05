@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Gravity HTTP Logger
  * Description: Logs the code, message, headers and body of HTTP responses provided by WordPress for requests sent to third-party services and GF core Background tasks.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Samuel Aguilera
  * Author URI: https://www.samuelaguilera.com
  * License: GPL-3.0+
