@@ -45,7 +45,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 	 * @since  1.0
 	 * @var    string $_path The path to the main plugin file, relative to the plugins folder.
 	 */
-	protected $_path = 'gf-no-duplicates/gf-no-duplicates.php';
+	protected $_path = 'gravity-http-logger/gravity-http-logger.php';
 
 	/**
 	 * Defines the full path to this class file.
