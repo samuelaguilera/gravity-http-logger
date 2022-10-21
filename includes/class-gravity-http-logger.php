@@ -171,6 +171,8 @@ class Gravity_HTTP_Logger extends GFAddOn {
 		foreach ( $services as $service ) {
 			if ( strpos( $url, $service ) !== false ) {
 				$this->log_debug( __METHOD__ . "(): [Start] Request To: {$url}\n" );
+				$this->log_debug( __METHOD__ . '(): --------8<--------8<--------[ Request Args ]--------8<--------8<--------' . "\n" );
+				$this->log_debug( __METHOD__ . '(): Args: ' . var_export( $parsed_args, true ) );
 				$this->log_debug( __METHOD__ . '(): --------8<--------8<--------[ Response Code & Mesage ]--------8<--------8<--------' . "\n" );
 				// Log $response['response']['code'].
 				$this->log_debug( __METHOD__ . "(): {$service} - Code: " . wp_remote_retrieve_response_code( $response ) . "\n" );
