@@ -163,6 +163,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 			'hooks.zapier.com', // Zapier.
 			'gf_check_background_tasks', // Background Tasks test (System Status).
 			'wp_gf_feed_processor', // Background feed processor (e.g. Wehooks add-on).
+			'squareup', // Square.
 		);
 
 		// Allow filtering the services supported.
