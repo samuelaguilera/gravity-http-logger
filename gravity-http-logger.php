@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Gravity HTTP Logger
  * Description: Logs the code, message, headers and body of HTTP responses provided by WordPress for requests sent to third-party services and GF core Background tasks.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: Samuel Aguilera
  * Author URI: https://www.samuelaguilera.com
  * License: GPL-3.0+
@@ -31,7 +31,7 @@ along with this program.  If not, see http://www.gnu.org/licenses.
 defined( 'ABSPATH' ) || die();
 
 // Defines the current version of the Gravity HTTP Logger.
-define( 'GRAVITY_HTTP_LOGGER_VERSION', '1.0.4' );
+define( 'GRAVITY_HTTP_LOGGER_VERSION', '1.0.5' );
 
 // Defines the minimum version of Gravity Forms required to run Gravity HTTP Logger.
 define( 'GRAVITY_HTTP_LOGGER_MIN_GF_VERSION', '2.5' );

@@ -14,6 +14,7 @@ This is an add-on for Gravity Forms that logs the code, message, headers and bod
 * Agile CRM.
 * Constant Contact.
 * Dropbox.
+* Geolocation.
 * GetResponse.
 * HelpScout.
 * HubSpot.
