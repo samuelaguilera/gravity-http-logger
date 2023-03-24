@@ -151,6 +151,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 			'api3.getresponse360.com', // GetResponse 360.
 			'www.googleapis.com', // Google Analytics.
 			'api.hubapi.com', // HubSpot.
+			'api.hsforms.com', // HubSpot.
 			'api-us1.com', // ActiveCampaign.
 			'agilecrm.com/dev/api/', // Agile CRM.
 			'api.helpscout.net', // HelpScout.
