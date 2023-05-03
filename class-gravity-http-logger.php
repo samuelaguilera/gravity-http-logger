@@ -159,6 +159,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 			'app.icontact.com', // iContact.
 			'slack.com/api', // Slack.
 			'api.cc.email', // Constant Contact.
+			'constantcontact.com', // Constant Contact (To catch token refresh).
 			'api.addpipe.com', // Pipe.
 			'www.google.com/recaptcha/api', // reCAPTCHA.
 			'hooks.zapier.com', // Zapier.
