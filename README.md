@@ -13,6 +13,7 @@ This is an add-on for Gravity Forms that logs the code, message, headers and bod
 * ActiveCampaign.
 * Agile CRM.
 * Constant Contact.
+* Cloudflare Turnstile. (Only for the POST request to perform the Turnstile challenge.)
 * Dropbox.
 * Geolocation.
 * GetResponse.

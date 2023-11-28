@@ -138,6 +138,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 	public function get_response_data( $response, $context, $class, $parsed_args, $url ) {
 		$services = array(
 			'api.mailchimp.com', // Mailchimp.
+			'admin.mailchimp.com',
 			'api.2checkout.com', // 2Checkout.
 			'api.paypal.com', // PayPal Checkout.
 			'api.sandbox.paypal.com', // PayPal Checkout Sandbox.
@@ -167,6 +168,8 @@ class Gravity_HTTP_Logger extends GFAddOn {
 			'wp_gf_feed_processor', // Background feed processor (e.g. Wehooks add-on).
 			'squareup', // Square.
 			'maps.googleapis.com/maps/api/place/', // Geolocation.
+			'challenges.cloudflare.com', // Cloudflare Turnstile. Only for the POST request to perform the Turnstile challenge done by the make_turnstile_challenge function.
+			'gravityapi.com', // License check.
 		);
 
 		// Allow filtering the services supported.
@@ -177,7 +180,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 				$this->log_debug( __METHOD__ . "(): [Start] Request To: {$url}\n" );
 				$this->log_debug( __METHOD__ . '(): --------8<--------8<--------[ Request Args ]--------8<--------8<--------' . "\n" );
 				$this->log_debug( __METHOD__ . '(): Args: ' . var_export( $parsed_args, true ) );
-				$this->log_debug( __METHOD__ . '(): --------8<--------8<--------[ Response Code & Mesage ]--------8<--------8<--------' . "\n" );
+				$this->log_debug( __METHOD__ . '(): --------8<--------8<--------[ Response Code & Message ]--------8<--------8<--------' . "\n" );
 				// Log $response['response']['code'].
 				$this->log_debug( __METHOD__ . "(): {$service} - Code: " . wp_remote_retrieve_response_code( $response ) . "\n" );
 				// Log $response['response']['message'].
