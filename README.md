@@ -45,3 +45,14 @@ The following add-ons are not using the WordPress HTTP API.
 * Stripe.
 * Trello.
 * Twilio.
+
+# Logging Custom Services
+
+You can use the gravity_http_logger_services filter to include the domain for other services that you may want to log, a partial match is enough. The example below would log requests sent to the domain example.com and any subdomain for it (e.g. www.example.com, auth.example.com, etc...).
+
+```
+add_filter( 'gravity_http_logger_services', function( $services ) {
+	$services[] = 'example.com'; // Replace this with the request destination domain.
+	return $services;
+} );
+```
