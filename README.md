@@ -28,6 +28,7 @@ This is an add-on for Gravity Forms that logs the code, message, headers and bod
 * Pipe.
 * Postmark.
 * reCAPTCHA.
+* Salesforce.
 * SendGrid.
 * Slack.
 * Square.
@@ -42,6 +43,7 @@ The following add-ons are not using the WordPress HTTP API.
 * Authorize.net.
 * Emma.
 * Highrise.
+* PayPal Payments Pro.
 * Stripe.
 * Trello.
 * Twilio.

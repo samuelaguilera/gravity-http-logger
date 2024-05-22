@@ -170,6 +170,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 			'maps.googleapis.com/maps/api/place/', // Geolocation.
 			'challenges.cloudflare.com', // Cloudflare Turnstile. Only for the POST request to perform the Turnstile challenge done by the make_turnstile_challenge function.
 			'gravityapi.com', // License check.
+			'salesforce.com', // Salesforce.
 		);
 
 		// Allow filtering the services supported.
