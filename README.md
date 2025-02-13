@@ -22,6 +22,7 @@ This is an add-on for Gravity Forms that logs the code, message, headers and bod
 * iContact.
 * Mad Mimi.
 * Mailchimp.
+* MailerLite
 * Mailgun.
 * Mollie.
 * PayPal Checkout.

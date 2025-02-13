@@ -171,6 +171,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 			'challenges.cloudflare.com', // Cloudflare Turnstile. Only for the POST request to perform the Turnstile challenge done by the make_turnstile_challenge function.
 			'gravityapi.com', // License check.
 			'salesforce.com', // Salesforce.
+			'connect.mailerlite.com', // MailerLite.
 		);
 
 		// Allow filtering the services supported.
