@@ -172,6 +172,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 			'gravityapi.com', // License check.
 			'salesforce.com', // Salesforce.
 			'connect.mailerlite.com', // MailerLite.
+			'api.brevo.com', // Brevo.
 		);
 
 		// Allow filtering the services supported.
