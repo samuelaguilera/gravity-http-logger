@@ -143,7 +143,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 			'api.paypal.com', // PayPal Checkout.
 			'api.sandbox.paypal.com', // PayPal Checkout Sandbox.
 			'api.mollie.com', // Mollie.
-			'www.zohoapis.com', // Zoho CRM.
+			'zohoapis', // Zoho CRM.
 			'api.dropboxapi.com', // Dropbox.
 			'api.sendgrid.com', // SendGrid.
 			'mailgun.net', // Mailgun.
