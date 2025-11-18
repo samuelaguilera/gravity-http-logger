@@ -542,23 +542,26 @@ class Gravity_HTTP_Logger extends GFAddOn {
 	public function log_data_to_database( $request_pattern, $url, $parsed_args, $response_code, $response_message, $response_headers, $response_body, $timestamp ) {
 		global $wpdb;
 
-		$codes_to_log = array(
-			'1' => $this->get_plugin_setting( 'log_1xx_codes' ),
-			'2' => $this->get_plugin_setting( 'log_2xx_codes' ),
-			'3' => $this->get_plugin_setting( 'log_3xx_codes' ),
-			'4' => $this->get_plugin_setting( 'log_4xx_codes' ),
-			'5' => $this->get_plugin_setting( 'log_5xx_codes' ),
-		);
+		// Check only if settings are already saved.
+		if ( '' === $this->get_plugin_setting( 'htpp_codes_to_log' ) ) {
+			$codes_to_log = array(
+				'1' => $this->get_plugin_setting( 'log_1xx_codes' ),
+				'2' => $this->get_plugin_setting( 'log_2xx_codes' ),
+				'3' => $this->get_plugin_setting( 'log_3xx_codes' ),
+				'4' => $this->get_plugin_setting( 'log_4xx_codes' ),
+				'5' => $this->get_plugin_setting( 'log_5xx_codes' ),
+			);
 
-		foreach ( $codes_to_log as $code => $value ) {
-			if ( '1' !== $value ) { // GF framework add-on stores 1 as string.
-				unset( $codes_to_log[ $code ] );
+			foreach ( $codes_to_log as $code => $value ) {
+				if ( '1' !== $value ) { // GF framework add-on stores 1 as string.
+					unset( $codes_to_log[ $code ] );
+				}
 			}
-		}
 
-		// Skip database log if first digit of the response code is not on the list of active settings.
-		if ( ! array_key_exists( substr( $response_code, 0, 1 ), $codes_to_log ) ) {
-			return;
+			// Skip database log if first digit of the response code is not on the list of active settings.
+			if ( ! array_key_exists( substr( $response_code, 0, 1 ), $codes_to_log ) ) {
+				return;
+			}
 		}
 
 		$table_name = $wpdb->prefix . GRAVITY_HTTP_LOGGER_TABLE_NAME;
