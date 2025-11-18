@@ -2,6 +2,11 @@
 
 This is an add-on for Gravity Forms that logs the code, message, headers and body of HTTP responses provided by WordPress for requests sent to third-party services using the WordPress HTTP API and GF core Background tasks.
 
+# Requirements
+
+- WordPress 6.2 or higher
+- Gravity Forms
+
 # Usage
 
 - Install and activate from your site Plugins page.
@@ -49,12 +54,12 @@ The following add-ons are not using the WordPress HTTP API.
 * Trello.
 * Twilio.
 
-# Logging Custom Services
+# Logging other requests
 
-You can use the gravity_http_logger_services filter to include the domain for other services that you may want to log, a partial match is enough. The example below would log requests sent to the domain example.com and any subdomain for it (e.g. www.example.com, auth.example.com, etc...).
+You can use the gravity_http_logger_request_strings filter to include new request strings (e.g. the domain for other services) that you may want to log, a partial match is enough. The example below would log requests sent to the domain example.com and any subdomain for it (e.g. www.example.com, auth.example.com, etc...).
 
 ```
-add_filter( 'gravity_http_logger_services', function( $services ) {
+add_filter( 'gravity_http_logger_request_strings', function( $services ) {
 	$services[] = 'example.com'; // Replace this with the request destination domain.
 	return $services;
 } );

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Gravity HTTP Logger
  * Description: Logs the code, message, headers and body of HTTP responses provided by WordPress for requests sent to third-party services and GF core Background tasks.
- * Version: 1.1.2
+ * Version: 1.99
  * Author: Samuel Aguilera
  * Author URI: https://www.samuelaguilera.com
  * License: GPL-3.0+
@@ -33,14 +33,28 @@ along with this program.  If not, see http://www.gnu.org/licenses.
 defined( 'ABSPATH' ) || die();
 
 // Updates handler.
-require_once plugin_dir_path( __FILE__ ) . 'class-gravity-http-logger-updater.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-gravity-http-logger-updater.php';
 $gravity_http_logger_updater = class_exists( 'Gravity_HTTP_Logger_Updater' ) ? new Gravity_HTTP_Logger_Updater( __FILE__ ) : false;
 
 // Defines the current version of the Gravity HTTP Logger.
-define( 'GRAVITY_HTTP_LOGGER_VERSION', '1.1.2' );
+define( 'GRAVITY_HTTP_LOGGER_VERSION', '1.99' );
 
 // Defines the minimum version of Gravity Forms required to run Gravity HTTP Logger.
 define( 'GRAVITY_HTTP_LOGGER_MIN_GF_VERSION', '2.5' );
+
+// Defines the minimum version of Gravity Forms required to run Gravity HTTP Logger.
+define( 'GRAVITY_HTTP_LOGGER_TABLE_NAME', 'ghl_requests' );
+
+// Defines the number of requests to keep when cleaning up the database.
+define( 'GRAVITY_HTTP_LOGGER_MAX_RECORDS', 50 );
+
+// List Table.
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+}
+
+require_once plugin_dir_path( __FILE__ ) . '/includes/class-gravity-http-logger-list-table.php';
+
 
 // After Gravity Forms is loaded, load the Add-On.
 add_action( 'gform_loaded', array( 'Gravity_HTTP_Logger_Bootstrap', 'load_addon' ), 5 );
@@ -62,7 +76,7 @@ class Gravity_HTTP_Logger_Bootstrap {
 	public static function load_addon() {
 
 		// Requires the class file.
-		require_once plugin_dir_path( __FILE__ ) . 'class-gravity-http-logger.php';
+		require_once plugin_dir_path( __FILE__ ) . 'includes/class-gravity-http-logger.php';
 
 		// Registers the class name with GFAddOn.
 		GFAddOn::register( 'Gravity_HTTP_Logger' );
