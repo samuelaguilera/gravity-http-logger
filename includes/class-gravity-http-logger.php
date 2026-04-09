@@ -151,6 +151,8 @@ class Gravity_HTTP_Logger extends GFAddOn {
 		'salesforce.com', // Salesforce.
 		'connect.mailerlite.com', // MailerLite.
 		'api.brevo.com', // Brevo.
+		'api.abuseipdb.com', // AbuseIPDB.
+		'api.quickemailverification.com', // QuickEmailVerification.
 	);
 
 
@@ -175,6 +177,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 	 * Adds hooks which need to be included before the init hook is triggered.
 	 */
 	public function pre_init() {
+		parent::pre_init();
 		$this->activation();
 	}
 
@@ -273,24 +276,24 @@ class Gravity_HTTP_Logger extends GFAddOn {
 						'type'          => 'text',
 						'name'          => 'max_records',
 						'label'         => 'Maximum Database Records',
-						'tooltip'       => 'The number of requests you want to keep in the database after the daily cleanup.',
+						'description'   => 'The number of requests you want to keep in the database after the daily cleanup.',
 						'default_value' => GRAVITY_HTTP_LOGGER_MAX_RECORDS,
 					),
 					array(
-						'name'    => 'htpp_codes_to_log',
-						'label'   => 'Type of requests to save into the database',
-						'type'    => 'checkbox',
-						'tooltip' => 'Use this to restrict requests saved to database based on the HTTP response code. Log file will still save all requests.',
-						'choices' => array(
+						'name'        => 'htpp_codes_to_log',
+						'label'       => 'Type of requests to save into the database',
+						'type'        => 'checkbox',
+						'description' => 'Use this to restrict requests saved to database based on the HTTP response code. Log file will still save all requests.',
+						'choices'     => array(
 							array(
 								'label'         => 'Informational response codes (100 – 199)',
 								'name'          => 'log_1xx_codes',
-								'default_value' => 1,
+								'default_value' => 0,
 							),
 							array(
 								'label'         => 'Successful response codes (200 – 299)',
 								'name'          => 'log_2xx_codes',
-								'default_value' => 1,
+								'default_value' => 0,
 							),
 							array(
 								'label'         => 'Redirection response codes (300 – 399)',
@@ -316,19 +319,20 @@ class Gravity_HTTP_Logger extends GFAddOn {
 				'description' => '<p class="ghl-warning">Be as specific as possible when adding a custom Request String. A generic string may save an excessive quantity of requests.</p>',
 				'fields'      => array(
 					array(
-						'type'          => 'textarea',
-						'name'          => 'request_patterns',
-						'label'         => 'Request Strings',
-						'tooltip'       => 'A comma separated list of additional matching strings you want to use to monitor the outgoing requests.',
-						'default_value' => '',
-						'class'         => 'medium',
+						'type'                => 'textarea',
+						'name'                => 'request_patterns',
+						'label'               => 'Request Strings',
+						'description'         => 'Optional list of additional matching strings, one per line and in lower case, that should be used to monitor the outgoing requests.',
+						'default_value'       => '',
+						'class'               => 'medium',
+						'validation_callback' => array( $this, 'validate_request_patterns' ),
 					),
 					array(
-						'name'    => 'default_strings',
-						'label'   => 'Default Strings',
-						'type'    => 'checkbox',
-						'tooltip' => 'This allows you to disable the default strings to monitor only the Request Strings you added in the previous setting.',
-						'choices' => array(
+						'name'        => 'default_strings',
+						'label'       => 'Default Strings',
+						'type'        => 'checkbox',
+						'description' => 'This allows you to disable the default strings to monitor only the Request Strings you added in the previous setting.',
+						'choices'     => array(
 							array(
 								'label'         => 'Disable Default Strings',
 								'name'          => 'disable_default_strings',
@@ -338,8 +342,94 @@ class Gravity_HTTP_Logger extends GFAddOn {
 					),
 				),
 			),
-
+			array(
+				'title'       => 'Email Alert Settings',
+				'description' => '',
+				'fields'      => array(
+					array(
+						'name'        => 'email_alerts',
+						'label'       => 'Email Alerts',
+						'type'        => 'checkbox',
+						'description' => 'Enable email alerts for requests saved to the database. Avoid this if saving successful response codes, as it will generate many emails.',
+						'choices'     => array(
+							array(
+								'label'         => 'Enable Email Alerts',
+								'name'          => 'enable_email_alerts',
+								'default_value' => 0,
+							),
+						),
+					),
+					array(
+						'type'                => 'text',
+						'name'                => 'email_alerts_recipient',
+						'label'               => 'Recipient for Alerts',
+						'description'         => 'The email address for alerts. Leave empty to use the site\'s Administration Email Address. For multiple recipients, use commas to separate addresses.',
+						'default_value'       => '',
+						'validation_callback' => array( $this, 'validate_email_alerts_recipient' ),
+					),
+				),
+			),
 		);
+	}
+
+	/**
+	 * Validate syntax for email or list of emails.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array  $field  The field object.
+	 * @param string $value  The field value.
+	 *
+	 * @return void or false
+	 */
+	public function validate_email_alerts_recipient( $field, $value ) {
+
+		// Skip for empty value.
+		if ( empty( $value ) ) {
+			return;
+		}
+
+		if ( ! is_email( $value ) && ! GFCommon::is_valid_email_list( $value ) ) {
+			$field->set_error(
+				'The value is invalid. You must enter a single email address or multiple addresses separated by commas.'
+			);
+		}
+	}
+
+	/**
+	 * Checks if the Domains Blocklist value is valid.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array  $field  The field object.
+	 * @param string $value  The field value.
+	 *
+	 * @return void
+	 */
+	public function validate_request_patterns( $field, $value ) {
+
+		// Skip for empty value.
+		if ( empty( $value ) ) {
+			return;
+		}
+
+		// Convert to array.
+		$request_patterns = preg_split( '/\r\n|\r|\n/', trim( $value ) );
+
+		foreach ( $request_patterns as $request_pattern ) {
+			// Skip any empty lines.
+			if ( '' === $request_pattern ) {
+				continue;
+			}
+
+			// Check uppercase letters.
+			if ( strtolower( $request_pattern ) !== $request_pattern ) {
+				$field->set_error(
+					'Value not valid. One pattern per line in lowercase.'
+				);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -462,7 +552,7 @@ class Gravity_HTTP_Logger extends GFAddOn {
 		$default_patterns = $this->get_plugin_setting( 'disable_default_strings' ) === '1' ? array() : $this->request_patterns;
 
 		// Get request_patterns from settings or use default ones if no setting is saved.
-		$request_patterns = $this->get_plugin_setting( 'request_patterns' ) ? array_merge( explode( ',', preg_replace( '/\s+/', '', $this->get_plugin_setting( 'request_patterns' ) ) ), $default_patterns ) : $default_patterns;
+		$request_patterns = ! empty( $this->get_plugin_setting( 'request_patterns' ) ) ? array_merge( preg_split( '/\r\n|\r|\n/', trim( $this->get_plugin_setting( 'request_patterns' ) ) ), $default_patterns ) : $default_patterns;
 
 		// Allow filtering the request_patterns supported.
 		$request_patterns = apply_filters( 'gravity_http_logger_request_strings', $request_patterns );
@@ -481,20 +571,21 @@ class Gravity_HTTP_Logger extends GFAddOn {
 
 				$this->log_data_to_database( $request_pattern, $url, maybe_serialize( $parsed_args ), $response_code, $response_message, maybe_serialize( $response_headers ), $response_body, $timestamp );
 
+				$this->process_alerts( $request_pattern, $url, maybe_serialize( $parsed_args ), $response_code, $response_message, maybe_serialize( $response_headers ), $response_body, $timestamp );
+
 				$this->log_debug( __METHOD__ . "(): [Start] Request To: {$url}\n" );
 				$this->log_debug( __METHOD__ . '(): --------8<--------8<--------[ Request Args ]--------8<--------8<--------' . "\n" );
 				$this->log_debug( __METHOD__ . '(): Args: ' . var_export( $parsed_args, true ) ); // phpcs:ignore
 				$this->log_debug( __METHOD__ . '(): --------8<--------8<--------[ Response Code & Message ]--------8<--------8<--------' . "\n" );
-				// Log $response['response']['code'].
+				// Log response code.
 				$this->log_debug( __METHOD__ . "(): {$request_pattern} - Code: " . $response_code . "\n" );
-				// Log $response['response']['message'].
+				// Log response message.
 				$this->log_debug( __METHOD__ . "(): {$request_pattern} - Message: " . $response_message . "\n" );
 				$this->log_debug( __METHOD__ . '(): --------8<--------8<--------[ Response Headers ]--------8<--------8<--------' . "\n" );
 				$this->log_debug( __METHOD__ . "(): {$request_pattern} - Headers: " . print_r( $response_headers, true ) ); // phpcs:ignore
 				$this->log_debug( __METHOD__ . '(): --------8<--------8<--------[ Response Body ]--------8<--------8<--------' . "\n" );
-				// Log $response['body'].
+				// Log response body.
 				$this->log_debug( __METHOD__ . "(): {$request_pattern} - Body: " . print_r( json_decode( $response_body, true ), true ) ); // phpcs:ignore
-				// $this->log_debug( __METHOD__ . '(): --------8<--------8<--------[ cut here ]--------8<--------8<--------' . "\n" );
 				$this->log_debug( __METHOD__ . "(): [End] Request To: {$url}\n" );
 
 			}
@@ -530,38 +621,38 @@ class Gravity_HTTP_Logger extends GFAddOn {
 	/**
 	 * Add logged data to database.
 	 *
-	 * @param string $request_pattern Service string to log.
-	 * @param string $url URL for the request.
-	 * @param array  $parsed_args Arguments used for the request.
-	 * @param int    $response_code HTTP status code returned.
+	 * @param string $request_pattern  Service string to log.
+	 * @param string $url              URL for the request.
+	 * @param array  $parsed_args      Arguments used for the request.
+	 * @param int    $response_code    HTTP status code returned.
 	 * @param string $response_message Message returned.
 	 * @param array  $response_headers Reponse headers returned.
 	 * @param array  $response_body    Response body.
-	 * @param string $timestamp Date and time for the request.
+	 * @param string $timestamp        Date and time for the request.
+	 *
+	 * return void
 	 */
 	public function log_data_to_database( $request_pattern, $url, $parsed_args, $response_code, $response_message, $response_headers, $response_body, $timestamp ) {
 		global $wpdb;
 
-		// Check only if settings are already saved.
-		if ( '' === $this->get_plugin_setting( 'htpp_codes_to_log' ) ) {
-			$codes_to_log = array(
-				'1' => $this->get_plugin_setting( 'log_1xx_codes' ),
-				'2' => $this->get_plugin_setting( 'log_2xx_codes' ),
-				'3' => $this->get_plugin_setting( 'log_3xx_codes' ),
-				'4' => $this->get_plugin_setting( 'log_4xx_codes' ),
-				'5' => $this->get_plugin_setting( 'log_5xx_codes' ),
-			);
+		$codes_to_log = array( // Codes to log from saved settings.
+			'1' => empty( $this->get_plugin_setting( 'log_1xx_codes' ) ) ? '0' : $this->get_plugin_setting( 'log_1xx_codes' ),
+			'2' => empty( $this->get_plugin_setting( 'log_2xx_codes' ) ) ? '0' : $this->get_plugin_setting( 'log_2xx_codes' ),
+			'3' => empty( $this->get_plugin_setting( 'log_3xx_codes' ) ) ? '1' : $this->get_plugin_setting( 'log_3xx_codes' ),
+			'4' => empty( $this->get_plugin_setting( 'log_4xx_codes' ) ) ? '1' : $this->get_plugin_setting( 'log_4xx_codes' ),
+			'5' => empty( $this->get_plugin_setting( 'log_5xx_codes' ) ) ? '1' : $this->get_plugin_setting( 'log_5xx_codes' ),
+		);
 
-			foreach ( $codes_to_log as $code => $value ) {
-				if ( '1' !== $value ) { // GF framework add-on stores 1 as string.
-					unset( $codes_to_log[ $code ] );
-				}
+		// Unset disabled codes from the array.
+		foreach ( $codes_to_log as $code => $value ) {
+			if ( '1' !== $value ) { // GF framework add-on stores 1 as string.
+				unset( $codes_to_log[ $code ] );
 			}
+		}
 
-			// Skip database log if first digit of the response code is not on the list of active settings.
-			if ( ! array_key_exists( substr( $response_code, 0, 1 ), $codes_to_log ) ) {
-				return;
-			}
+		// Skip database log if first digit of the response code is not on the list of active settings.
+		if ( ! array_key_exists( substr( $response_code, 0, 1 ), $codes_to_log ) ) {
+			return;
 		}
 
 		$table_name = $wpdb->prefix . GRAVITY_HTTP_LOGGER_TABLE_NAME;
@@ -584,5 +675,78 @@ class Gravity_HTTP_Logger extends GFAddOn {
 				)
 			)
 		);
+	}
+
+	/**
+	 * Process the Email Alerts.
+	 *
+	 * @param string $request_pattern  Service string to log.
+	 * @param string $url              URL for the request.
+	 * @param array  $parsed_args      Arguments used for the request.
+	 * @param int    $response_code    HTTP status code returned.
+	 * @param string $response_message Message returned.
+	 * @param array  $response_headers Reponse headers returned.
+	 * @param array  $response_body    Response body.
+	 * @param string $timestamp        Date and time for the request.
+	 *
+	 * return void
+	 */
+	public function process_alerts( $request_pattern, $url, $parsed_args, $response_code, $response_message, $response_headers, $response_body, $timestamp ) {
+
+		$enable_email_alerts = $this->get_plugin_setting( 'enable_email_alerts' );
+
+		if ( ! $enable_email_alerts ) {
+			return;
+		}
+
+		$datetime = new DateTime( $timestamp, new DateTimeZone( 'UTC' ) );
+		$datetime->setTimezone( wp_timezone() );
+
+		$timestamp = $datetime->format( 'Y-m-d H:i:s' );
+
+		$subject = "Gravity HTTP Logger Alert - HTTP $response_code";
+
+		$recipient = ! empty( $this->get_plugin_setting( 'email_alerts_recipient' ) ) ? $this->get_plugin_setting( 'email_alerts_recipient' ) : get_option( 'admin_email' );
+
+		$message  = "Request URL: $url\n\n";
+		$message .= "HTTP Response Code: $response_code\n\n";
+		$message .= "Response Message: $response_message\n\n";
+		$message .= "Date and Time: $timestamp (" . get_option( 'timezone_string' ) . ")\n\n";
+		$message .= "For additional information, please check the HTTP Logger page on your site.\n\n";
+
+		wp_mail( $recipient, $subject, $message );
+	}
+
+	// # UPGRADES ------------------------------------------------------------------------------------------------------
+
+	/**
+	 * Checks if a previous version was installed and if the feeds need migrating to the framework structure.
+	 *
+	 * @since  2.1
+	 * @access public
+	 *
+	 * @param string $previous_version The version number of the previously installed version.
+	 */
+	public function upgrade( $previous_version ) {
+
+		// If previous version is not defined, set it to the version stored in the options table.
+		if ( empty( $previous_version ) ) {
+			$previous_version = get_option( 'gravity-http-logger_version' );
+		}
+
+		// Grab data for the update check.
+		$previous_is_pre_21 = ! empty( $previous_version ) && version_compare( $previous_version, '2.1', '<' );
+		$settings           = $this->get_plugin_settings();
+
+		if ( $previous_is_pre_21 && ! empty( $settings['request_patterns'] ) ) {
+
+			// Convert request patterns from comma separated to one per line.
+			$migrated_patterns = implode( "\n", array_map( 'trim', explode( ',', $settings['request_patterns'] ) ) );
+
+			$settings['request_patterns'] = $migrated_patterns;
+
+			// Update settings.
+			$this->update_plugin_settings( $settings );
+		}
 	}
 }
