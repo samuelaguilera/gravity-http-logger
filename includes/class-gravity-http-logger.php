@@ -343,14 +343,14 @@ class Gravity_HTTP_Logger extends GFAddOn {
 				),
 			),
 			array(
-				'title'       => 'Email Alert Settings',
+				'title'       => 'Email Alerts Settings',
 				'description' => '',
 				'fields'      => array(
 					array(
 						'name'        => 'email_alerts',
 						'label'       => 'Email Alerts',
 						'type'        => 'checkbox',
-						'description' => 'Enable email alerts for requests saved to the database. Avoid this if saving successful response codes, as it will generate many emails.',
+						'description' => 'Enable email alerts for requests that are saved to the database. Not recommended if you are saving successful response codes, as this may generate excessive alerts.',
 						'choices'     => array(
 							array(
 								'label'         => 'Enable Email Alerts',
@@ -362,8 +362,8 @@ class Gravity_HTTP_Logger extends GFAddOn {
 					array(
 						'type'                => 'text',
 						'name'                => 'email_alerts_recipient',
-						'label'               => 'Recipient for Alerts',
-						'description'         => 'The email address for alerts. Leave empty to use the site\'s Administration Email Address. For multiple recipients, use commas to separate addresses.',
+						'label'               => 'Recipient Email For Alerts',
+						'description'         => 'Leave empty to use the site\'s Administration Email Address. Separate multiple email addresses with commas.',
 						'default_value'       => '',
 						'validation_callback' => array( $this, 'validate_email_alerts_recipient' ),
 					),
