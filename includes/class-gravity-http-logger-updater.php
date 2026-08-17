@@ -124,7 +124,7 @@ class Gravity_HTTP_Logger_Updater {
 		}
 
 		// Remove v prefix from tag name if present.
-		if ( isset( $github_plugin_data['tag_name'] ) && substr( $github_plugin_data['tag_name'], 0, 1 ) === 'v' ) {
+		if ( is_array( $github_plugin_data ) && isset( $github_plugin_data['tag_name'] ) && substr( $github_plugin_data['tag_name'], 0, 1 ) === 'v' ) {
 			$github_plugin_data['tag_name'] = substr( $github_plugin_data['tag_name'], 1 );
 		}
 
