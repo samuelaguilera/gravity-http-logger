@@ -104,28 +104,30 @@ class Gravity_HTTP_Logger_Updater {
 		// Cached request to prevent GitHub rate limit.
 		$github_plugin_data = get_transient( $this->github_username . '-' . $this->github_repository . '_update_check' );
 
-		$request_uri = esc_url_raw( "https://api.github.com/repos/$this->github_username/$this->github_repository/releases" );
-
 		// Fetch plugin data from GitHub if transient is no longer valid.
 		if ( false === $github_plugin_data ) {
 
-			$github_plugin_data = wp_remote_get( $request_uri ); // Using default WP_Http::request() args.
+			$request_uri = esc_url_raw( "https://api.github.com/repos/$this->github_username/$this->github_repository/releases" );
 
-			if ( ! is_wp_error( $github_plugin_data ) ) {
-				// Get body response.
-				$github_plugin_data = current( json_decode( wp_remote_retrieve_body( $github_plugin_data ), true ) );
+			$response = wp_remote_get( $request_uri );
 
-				// Prevent GitHub rate limit if for some reason an empty response was returned. e.g. No releases available.
-				if ( ! is_array( $github_plugin_data ) && empty( $github_plugin_data ) ) {
+			if ( ! is_wp_error( $response ) ) {
+				$github_plugin_data = current( json_decode( wp_remote_retrieve_body( $response ), true ) );
+
+				if ( ! is_array( $github_plugin_data ) || empty( $github_plugin_data ) ) {
 					$github_plugin_data = 'empty_response';
 				}
+			} else {
+				// If WP Error, add the error code and message to the transient.
+				$github_plugin_data = 'GitHub request failed. Error code: ' . $response->get_error_code() . '. Error Message: ' . $response->get_error_message();
 			}
+
 			set_transient( $this->github_username . '-' . $this->github_repository . '_update_check', $github_plugin_data, HOUR_IN_SECONDS );
 		}
 
-		// Remove v prefix from tag name if present.
-		if ( is_array( $github_plugin_data ) && isset( $github_plugin_data['tag_name'] ) && substr( $github_plugin_data['tag_name'], 0, 1 ) === 'v' ) {
-			$github_plugin_data['tag_name'] = substr( $github_plugin_data['tag_name'], 1 );
+		if ( is_array( $github_plugin_data ) && isset( $github_plugin_data['tag_name'] ) ) {
+			// Remove v or V from tag name if any.
+			$github_plugin_data['tag_name'] = ltrim( $github_plugin_data['tag_name'], 'vV' );
 		}
 
 		return $github_plugin_data;
