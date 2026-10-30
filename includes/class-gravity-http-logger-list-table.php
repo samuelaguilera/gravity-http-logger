@@ -45,7 +45,9 @@ class Gravity_HTTP_Logger_List_Table extends WP_List_Table {
 			}
 			$reflection = new ReflectionObject( $obj );
 			foreach ( $reflection->getProperties() as $prop ) {
-				$prop->setAccessible( true );
+				if ( PHP_VERSION_ID < 80100 ) {
+					$prop->setAccessible( true );
+				}
 				$val = $prop->getValue( $obj );
 				if ( is_array( $val ) ) {
 					return $val;
